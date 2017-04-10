@@ -1,0 +1,46 @@
+#### README ####
+
+IMPORTANT: Please note you can download correlation data tables,
+supported by Ensembl, via the highly customisable BioMart and
+EnsMart data mining tools. See http://www.ensembl.org/biomart/martview or
+http://www.ebi.ac.uk/biomart/ for more information.
+
+##################
+Fasta RNA dumps
+#################
+
+These files hold the transcript sequences corresponding to non-coding RNA genes 
+(ncRNA) both short and long.
+
+------------
+FILE NAMES
+------------
+The files are consistently named following this pattern:
+<species>.<assembly>.<sequence type>.fa.gz
+
+<species>: The systematic name of the species.
+<assembly>: The assembly build name.
+<sequence type>: ncrna for non-coding RNA sequences
+
+EXAMPLES
+  for Human:
+    Homo_sapiens.NCBI36.ncrna.fa.gz
+      Transcript sequences for all ncRNA gene types.
+
+
+-------------------------------
+FASTA Sequence Header Lines
+------------------------------
+The FASTA sequence header lines are designed to be consistent across
+all types of Ensembl FASTA sequences.  This gives enough information
+for the sequence to be identified outside the context of the FASTA file.
+
+General format:
+
+>ENST00000347977 ncrna:miRNA chromosome:NCBI35:1:217347790:217347874:-1 gene:ENSG00000195671 gene_biotype:ncRNA transcript_biotype:ncRNA
+   ^             ^     ^     ^                                          ^                    ^                           ^ 
+   ID            |     |  LOCATION                            GENE: gene stable ID       GENE: gene biotype           TRANSCRIPT: transcript biotype   
+                 |   STATUS
+              SEQTYPE
+
+
