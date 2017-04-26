@@ -1,0 +1,28 @@
+[
+  {
+    "name": "first",
+    "substrates": [
+      "Aconitase",
+      "Citrate"
+    ],
+    "products": [
+      "Aconitase",
+      "CisAconitate",
+      "H2O"
+    ]
+  },
+  {
+    "name": "second",
+    "substrates": [
+      "CitrateSynthase",
+      "Oxaloacetate",
+      "AcetylCoA",
+      "H2O"
+    ],
+    "products": [
+      "CitrateSynthase",
+      "Citrate",
+      "CoASH"
+    ]
+  }
+]
