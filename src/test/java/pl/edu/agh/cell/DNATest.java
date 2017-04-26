@@ -1,8 +1,9 @@
 package pl.edu.agh.cell;
 
 import org.junit.Test;
-import pl.edu.agh.cell.rna.RNA;
-import pl.edu.agh.cell.rna.mRNA;
+import pl.edu.agh.miss.genome.dna.DNA;
+import pl.edu.agh.miss.genome.rna.RNA;
+import pl.edu.agh.miss.genome.rna.mRNA;
 
 import java.util.Arrays;
 import java.util.List;
