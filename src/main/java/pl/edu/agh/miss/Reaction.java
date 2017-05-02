@@ -38,4 +38,9 @@ public class Reaction {
     public List<ParticleType> getProducts() {
         return products;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }
