@@ -1,4 +1,4 @@
-package pl.edu.agh.cell;
+package pl.edu.agh.miss;
 
 import org.junit.Test;
 import pl.edu.agh.miss.genome.dna.DNA;
@@ -21,12 +21,11 @@ public class DNATest {
         DNA dna = new DNA(testDNA);
         dna.transcript(testDNA, testrna);
         assertEquals(res.getSequence(), testrna.getSequence());
-
     }
 
     @Test
     public void getGenes() throws Exception {
-        DNA dna = new DNA("somerubbishATG_match1_TGArubbishoncemoreATG_match2_TAGmatch2ATG_m3_TAAlastrubbish");
+        DNA dna = new DNA("somerubbishATG_match1_TGATAArubbishoncemoreATG_match2_TAGmatch2ATG_m3_TAAlastrubbish");
         List<String> unwinded = dna.getGenes();
         List<String> testSlice = Arrays.asList("_MATCH1_", "_MATCH2_", "_M3_");
         assertEquals(testSlice, unwinded);

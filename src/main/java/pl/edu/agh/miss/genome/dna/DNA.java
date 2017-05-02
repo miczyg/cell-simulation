@@ -4,7 +4,6 @@ import net.sf.jfasta.FASTAElement;
 import net.sf.jfasta.FASTAFileReader;
 import net.sf.jfasta.impl.FASTAElementIterator;
 import net.sf.jfasta.impl.FASTAFileReaderImpl;
-import pl.edu.agh.miss.Particle;
 import pl.edu.agh.miss.genome.rna.RNA;
 
 import java.io.File;
@@ -15,21 +14,17 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DNA {
+
     //region Public methods
+
     /***
      *
      * @param sequence String with sequence of DNA
      * Aditionaly slicing given sequence to genes list
      */
-    public DNA(String sequence){
+    public DNA(String sequence) {
         dna = sequence.toUpperCase();
-        genes = new ArrayList<>();
-        Pattern p = Pattern.compile("(ATG\\w+TGA)|(ATG\\w+TAG)|(ATG\\w+TAA)");
-        Matcher m = p.matcher(dna);
-        while (m.find()) {
-            genes.add(m.group());
-        }
-        genes = genes.stream().map(e -> e.substring(3, e.length()-3)).collect(Collectors.toList());
+        genes = extractGenes(dna);
     }
 
     public DNA(File fastaFile) throws IOException {
@@ -39,16 +34,23 @@ public class DNA {
         StringBuilder builder = new StringBuilder();
         while (it.hasNext()) {
             FASTAElement elem = it.next();
-             builder.append(elem.getSequence());
+            builder.append(elem.getSequence());
         }
         dna = builder.toString().toUpperCase();
-        genes = new ArrayList<>();
-        Pattern p = Pattern.compile("(ATG\\w+TGA)|(ATG\\w+TAG)|(ATG\\w+TAA)");
-        Matcher m = p.matcher(dna);
+
+        genes = extractGenes(dna);
+    }
+
+    private List<String> extractGenes(String dnaSequence) {
+        ArrayList<String> genesList = new ArrayList<>();
+        Pattern p = Pattern.compile(GENOME_REGEX);
+        Matcher m = p.matcher(dnaSequence);
         while (m.find()) {
-            genes.add(m.group());
+            if (m.group().length() >  MIN_GEN_LEN + 6) {
+                genesList.add(m.group());
+            }
         }
-        genes = genes.stream().map(e -> e.substring(3, e.length()-3)).collect(Collectors.toList());
+        return genesList.stream().map(e -> e.substring(3, e.length() - 3)).collect(Collectors.toList());
     }
 
     /***
@@ -56,7 +58,7 @@ public class DNA {
      * @param dna Unzipped genome sequence
      * @param target targeting RNA particle
      */
-    public void transcript(String dna, RNA target, Particle enzyme){
+    public void transcript(String dna, RNA target/*, Particle enzyme*/) {
         /*switch (polymerase.pType) {
             case RNA_II:
                 target = new mRNA();
@@ -84,6 +86,7 @@ public class DNA {
     private String dna;
     private List<String> genes;
     private static final Map<String, String> dna2mrna;
+
     static {
         dna2mrna = new HashMap<>();
         dna2mrna.put("G", "C");
@@ -92,10 +95,24 @@ public class DNA {
         dna2mrna.put("A", "U");
     }
 
-    private static final List<String> startCodons = Collections.singletonList("ATG");
-    private static final List<String> stopCodons = Arrays.asList("TGA", "TAG", "TAA");
+    private static final String GENOME_REGEX = "(ATG.*?(?:TGA|TAA|TAG))";
+    /**
+     * from here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC29761/
+     * meets num of genes here: http://book.bionumbers.org/how-many-genes-are-in-a-genome/
+     */
+    private static final int MIN_GEN_LEN = 60; //from here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC29761/
+
     //endregion
 
+    public static void main(String[] args) throws IOException {
+        File dnaFile = new File("data/escherichia_coli/GCF_000005845.2_ASM584v2_genomic.fna");
+        DNA dna = new DNA(dnaFile);
+        List<String> genom = dna.getGenes();
+        System.out.println(genom.size());
+//        for (String g: genom) {
+//            System.out.println(g);
+//        }
+    }
 
 
 }
