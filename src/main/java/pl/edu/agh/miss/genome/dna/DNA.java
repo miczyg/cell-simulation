@@ -108,10 +108,30 @@ public class DNA {
         File dnaFile = new File("data/escherichia_coli/GCF_000005845.2_ASM584v2_genomic.fna");
         DNA dna = new DNA(dnaFile);
         List<String> genom = dna.getGenes();
+        String seq = dna.dna;
         System.out.println(genom.size());
-//        for (String g: genom) {
-//            System.out.println(g);
-//        }
+        String accD = "1 ttatttggtg atattttttt caatatcatg cagcaaacgg tgcaacattg ccgtgtctcg\n" +
+                "       61 ttgctctaaa agccccaggc gttgttgtaa ccagtcgacc agttttatgt catctgccac\n" +
+                "      121 tgccagagtc gtcagcaatg tcatggctcg ttcgcgtaaa gcttgcagtt gatgttggtc\n" +
+                "      181 tgccgttgca tcacttttcg ccggttgttg tattaatgtt gctaattgat agcaatagac\n" +
+                "      241 catcaccgcc tgccccagat tgagcgaagg ataatccgcc accatcggca caccagtaag\n" +
+                "      301 aacgtcagcc aacgctaact cttcgttagt caacccggaa tcttcgcgac caaacaccag\n" +
+                "      361 cgcggcatgg ctcatccatg aagatttttc ctctaacagc ggcaccagtt caactggcgt\n" +
+                "      421 ggcgtagtaa tgatatttcg cccgactgcg cgcagtggtg gcgacagtga aatcgacatc\n" +
+                "      481 gtgtaacgat tcagccaatg tcgggaaaac tttaatatta tcaataatat caccagatcc\n" +
+                "      541 atgtgcgacc cagcgggtgg ctggctccag gtgtgcctga ctatcgacaa tccgcagatc\n" +
+                "      601 gctaaacccc atcgttttca ttgcccgcgc cgctgcccca atattttctg ctctggcggg\n" +
+                "      661 tgcgaccaga ataatcgtta tacgcat";
+        accD = accD.toUpperCase().replaceAll("\n", "").replaceAll(" ", "").replaceAll("\\d","");
+        System.out.println(accD);
+        if(seq.contains(seq)){
+            System.out.println("CONTAINS");
+        }
+        for (String g: genom) {
+            if(g.equals(accD)){
+                System.out.println("MATCH");
+            }
+        }
     }
 
 
