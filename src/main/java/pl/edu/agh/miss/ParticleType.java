@@ -1,5 +1,6 @@
 package pl.edu.agh.miss;
 
+@SuppressWarnings("unused")
 public enum ParticleType {
     Oxaloacetate,
     AcetylCoA,
