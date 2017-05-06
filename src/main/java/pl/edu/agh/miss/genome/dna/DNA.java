@@ -4,53 +4,43 @@ import net.sf.jfasta.FASTAElement;
 import net.sf.jfasta.FASTAFileReader;
 import net.sf.jfasta.impl.FASTAElementIterator;
 import net.sf.jfasta.impl.FASTAFileReaderImpl;
+import org.apache.commons.lang3.StringUtils;
 import pl.edu.agh.miss.genome.rna.RNA;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DNA {
 
     //region Public methods
 
-    /***
-     *
-     * @param sequence String with sequence of DNA
-     * Aditionaly slicing given sequence to genes list
-     */
-    public DNA(String sequence) {
-        dna = sequence.toUpperCase();
-        genes = extractGenes(dna);
-    }
-
     public DNA(File fastaFile) throws IOException {
         final FASTAFileReader reader = new FASTAFileReaderImpl(fastaFile);
         final FASTAElementIterator it = reader.getIterator();
         List<FASTAElement> outElements = new ArrayList<>();
-        StringBuilder builder = new StringBuilder();
+        genes = new LinkedList<>();
         while (it.hasNext()) {
             FASTAElement elem = it.next();
-            builder.append(elem.getSequence());
-        }
-        dna = builder.toString().toUpperCase();
-
-        genes = extractGenes(dna);
-    }
-
-    private List<String> extractGenes(String dnaSequence) {
-        ArrayList<String> genesList = new ArrayList<>();
-        Pattern p = Pattern.compile(GENOME_REGEX);
-        Matcher m = p.matcher(dnaSequence);
-        while (m.find()) {
-            if (m.group().length() >  MIN_GEN_LEN + 6) {
-                genesList.add(m.group());
+            String header = elem.getHeader();
+            String name = StringUtils.substringBetween(header, "gene=", "]");
+            if (name.equals("prfB")) continue; //suppress strange gene location exception -> TODO: sth else then continue :D
+            String protein = StringUtils.substringBetween(header, "protein=", "]");
+            int[] location;
+            try {
+                location = Arrays.stream(StringUtils.substringBetween(header, "location=", "]")
+                        .split("\\.\\."))
+                        .mapToInt(Integer::parseInt)
+                        .toArray();
+            }catch (Exception e){
+                location = Arrays.stream(StringUtils.substringBetween(header, "location=complement(", ")")
+                        .split("\\.\\."))
+                        .mapToInt(Integer::parseInt)
+                        .toArray();
             }
+            genes.add(new Gene(name, elem.getSequence(), protein, location[0], location[1]));
         }
-        return genesList.stream().map(e -> e.substring(3, e.length() - 3)).collect(Collectors.toList());
     }
 
     /***
@@ -58,16 +48,7 @@ public class DNA {
      * @param dna Unzipped genome sequence
      * @param target targeting RNA particle
      */
-    public void transcript(String dna, RNA target/*, Particle enzyme*/) {
-        /*switch (polymerase.pType) {
-            case RNA_II:
-                target = new mRNA();
-                break;
-            case RNA_III:
-                target = new tRNA();
-                break;
-        }*/
-
+    public void transcript(String dna, RNA target) {
         target.setSequence(
                 Arrays.stream(dna.
                         split("(?!^)")).
@@ -77,14 +58,13 @@ public class DNA {
         );
     }
 
-    public List<String> getGenes() {
+    public List<Gene> getGenes() {
         return genes;
     }
     //endregion
 
     //region Privates
-    private String dna;
-    private List<String> genes;
+    private List<Gene> genes;
     private static final Map<String, String> dna2mrna;
 
     static {
@@ -105,33 +85,11 @@ public class DNA {
     //endregion
 
     public static void main(String[] args) throws IOException {
-        File dnaFile = new File("data/escherichia_coli/GCF_000005845.2_ASM584v2_genomic.fna");
-        DNA dna = new DNA(dnaFile);
-        List<String> genom = dna.getGenes();
-        String seq = dna.dna;
-        System.out.println(genom.size());
-        String accD = "1 ttatttggtg atattttttt caatatcatg cagcaaacgg tgcaacattg ccgtgtctcg\n" +
-                "       61 ttgctctaaa agccccaggc gttgttgtaa ccagtcgacc agttttatgt catctgccac\n" +
-                "      121 tgccagagtc gtcagcaatg tcatggctcg ttcgcgtaaa gcttgcagtt gatgttggtc\n" +
-                "      181 tgccgttgca tcacttttcg ccggttgttg tattaatgtt gctaattgat agcaatagac\n" +
-                "      241 catcaccgcc tgccccagat tgagcgaagg ataatccgcc accatcggca caccagtaag\n" +
-                "      301 aacgtcagcc aacgctaact cttcgttagt caacccggaa tcttcgcgac caaacaccag\n" +
-                "      361 cgcggcatgg ctcatccatg aagatttttc ctctaacagc ggcaccagtt caactggcgt\n" +
-                "      421 ggcgtagtaa tgatatttcg cccgactgcg cgcagtggtg gcgacagtga aatcgacatc\n" +
-                "      481 gtgtaacgat tcagccaatg tcgggaaaac tttaatatta tcaataatat caccagatcc\n" +
-                "      541 atgtgcgacc cagcgggtgg ctggctccag gtgtgcctga ctatcgacaa tccgcagatc\n" +
-                "      601 gctaaacccc atcgttttca ttgcccgcgc cgctgcccca atattttctg ctctggcggg\n" +
-                "      661 tgcgaccaga ataatcgtta tacgcat";
-        accD = accD.toUpperCase().replaceAll("\n", "").replaceAll(" ", "").replaceAll("\\d","");
-        System.out.println(accD);
-        if(seq.contains(seq)){
-            System.out.println("CONTAINS");
-        }
-        for (String g: genom) {
-            if(g.equals(accD)){
-                System.out.println("MATCH");
-            }
-        }
+        File geneFile = new File("data/escherichia_coli/full_genes_info.fasta");
+        DNA dna = new DNA(geneFile);
+        dna.getGenes().forEach(System.out::println);
+        System.out.println(dna.genes.size());
+
     }
 
 

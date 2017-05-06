@@ -1,0 +1,155 @@
+[
+  {
+    "name": "birA",
+    "start": 4173082,
+    "stop": 4174047,
+    "products": [
+      "AcetylCoA"
+    ]
+  },
+  {
+    "name": "accA",
+    "start": 208621,
+    "stop": 209580,
+    "products": [
+      "AcetylCoA"
+    ]
+  },
+  {
+    "name": "acnB",
+    "start": 131615,
+    "stop": 134212,
+    "products": [
+      "CisAconitate",
+      "aconitate hydratase 2"
+    ]
+  },
+  {
+    "name": "prpB",
+    "start": 348682,
+    "stop": 349572,
+    "products": [
+      "Isocitrate"
+    ]
+  },
+  {
+    "name": "citT",
+    "start": 645117,
+    "stop": 645117,
+    "products": [
+      "Citrate",
+      "Succinate"
+    ]
+  },
+  {
+    "name": "leuB",
+    "start": 80867,
+    "stop": 81958,
+    "products": [
+      "NADPlus"
+    ]
+  },
+  {
+    "name": "ligA",
+    "start": 2528161,
+    "stop": 2530176,
+    "products": [
+      "NADPlus",
+      "DNA ligase"
+    ]
+  },
+  {
+    "name": "ligB",
+    "start": 3819488,
+    "stop": 3821170,
+    "products": [
+      "NADPlus",
+      "DNA ligase"
+    ]
+  },
+  {
+    "name": "dld",
+    "start": 2222185,
+    "stop": 2223900,
+    "products": [
+      "D-lactate dehydrogenase",
+      "FAD protein",
+      "NADH"
+    ]
+  },
+  {
+    "name": "clcA",
+    "start": 175107,
+    "stop": 176528,
+    "products": [
+      "HPlus",
+      "Cl(-)"
+    ]
+  },
+  {
+    "name": "clcB",
+    "start": 1665315,
+    "stop": 1666571,
+    "products": [
+      "HPlus",
+      "Cl(-)"
+    ]
+  },
+  {
+    "name": "kgtP",
+    "start": 2724448,
+    "stop": 2725746,
+    "products": [
+      "AlphaKetoglutarate"
+    ]
+  },
+  {
+    "name": "sucC",
+    "start": 763014,
+    "stop": 764180,
+    "products": [
+      "SuccinylCoA"
+    ]
+  },
+  {
+    "name": "sucD",
+    "start": 764180,
+    "stop": 765049,
+    "products": [
+      "SuccinylCoA",
+      "NAD(P)-binding"
+    ]
+  },
+  {
+    "name": "wcaH",
+    "start": 2125743,
+    "stop": 2126222,
+    "products": [
+      "GDP"
+    ]
+  },
+  {
+    "name": "wcaG",
+    "start": 2126225,
+    "stop": 2127190,
+    "products": [
+      "GDP"
+    ]
+  },
+  {
+    "name": "nudK",
+    "start": 2582903,
+    "stop": 2583478,
+    "products": [
+      "GDP"
+    ]
+  },
+  {
+    "name": "nudK",
+    "start": 2582903,
+    "stop": 2583478,
+    "products": [
+      "GDP"
+    ]
+  }
+]
