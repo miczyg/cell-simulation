@@ -1,8 +1,5 @@
 package pl.edu.agh.miss;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Particle {
 
     private final ParticleType particleType;
@@ -11,11 +8,6 @@ public class Particle {
 
     public Particle(ParticleType particleType) {
         this.particleType = particleType;
-    }
-
-    @JsonCreator
-    public Particle(@JsonProperty("name") String name) {
-        this(ParticleType.valueOf(name));
     }
 
     public ParticleType getParticleType() {

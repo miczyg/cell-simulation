@@ -87,7 +87,7 @@ public class DNA {
     public static void main(String[] args) throws IOException {
         File geneFile = new File("data/escherichia_coli/full_genes_info.fasta");
         DNA dna = new DNA(geneFile);
-        dna.getGenes().forEach(System.out::println);
+        dna.getGenes().forEach(g -> System.out.println(g.getProducts()));
         System.out.println(dna.genes.size());
 
     }

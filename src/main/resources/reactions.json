@@ -1,28 +1,52 @@
 [
   {
-    "name": "first",
-    "substrates": [
-      "Aconitase",
-      "Citrate"
-    ],
-    "products": [
-      "Aconitase",
-      "CisAconitate",
-      "H2O"
-    ]
+    "name": "AldolCondensation",
+    "substrates": ["Oxaloacetate", "AcetylCoA", "H2O"],
+    "products": ["CoASH", "Citrate"]
   },
   {
-    "name": "second",
-    "substrates": [
-      "CitrateSynthase",
-      "Oxaloacetate",
-      "AcetylCoA",
-      "H2O"
-    ],
-    "products": [
-      "CitrateSynthase",
-      "Citrate",
-      "CoASH"
-    ]
+    "name": "CitrateDehydration",
+    "substrates": ["Citrate"],
+    "products": ["CisAconitate", "H2O"]
+  },
+  {
+    "name": "CisAconitateHydration",
+    "substrates": ["CisAconitate", "H2O"],
+    "products": ["Isocitrate"]
+  },
+  {
+    "name": "IsocitrateOxydation",
+    "substrates": ["Isocitrate", "NADPlus"],
+    "products": ["Oxalosuccinate", "NADH", "HPlus"]
+  },
+  {
+    "name": "Decarboxylation",
+    "substrates": ["Oxalosuccinate"],
+    "products": ["AlphaKetoglutarate", "CO2"]
+  },
+  {
+    "name": "OxidativeDecarboxylation",
+    "substrates": ["AlphaKetoglutarate", "NADPlus", "CoASH"],
+    "products": ["SuccinylCoA", "NADH", "HPlus", "CO2"]
+  },
+  {
+    "name": "SubstrateLevelPhosphorylation",
+    "substrates": ["SuccinylCoA", "GDP", "Pi"],
+    "products": ["Succinate", "CoASH", "GTP"]
+  },
+  {
+    "name": "SuccinateOxidation",
+    "substrates": ["Succinate", "Ubiquinone"],
+    "products": ["Fumarate", "Ubiquinol"]
+  },
+  {
+    "name": "FumarateHydration",
+    "substrates": ["Fumarate", "H2O"],
+    "products": ["LMalate"]
+  },
+  {
+    "name": "LMalateOxidation",
+    "substrates": ["LMalate", "NADPlus"],
+    "products": ["Oxaloacetate", "NADH", "HPlus"]
   }
 ]
