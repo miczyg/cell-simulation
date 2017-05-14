@@ -5,6 +5,7 @@ import net.sf.jfasta.FASTAFileReader;
 import net.sf.jfasta.impl.FASTAElementIterator;
 import net.sf.jfasta.impl.FASTAFileReaderImpl;
 import org.apache.commons.lang3.StringUtils;
+import pl.edu.agh.miss.ParticleType;
 import pl.edu.agh.miss.genome.rna.RNA;
 
 import java.io.File;
@@ -16,7 +17,7 @@ public class DNA {
 
     //region Public methods
 
-    public DNA(File fastaFile) throws IOException {
+    public DNA(File fastaFile, Map<String, String> particleNames) throws IOException {
         final FASTAFileReader reader = new FASTAFileReaderImpl(fastaFile);
         final FASTAElementIterator it = reader.getIterator();
         List<FASTAElement> outElements = new ArrayList<>();
@@ -39,7 +40,16 @@ public class DNA {
                         .mapToInt(Integer::parseInt)
                         .toArray();
             }
-            genes.add(new Gene(name, elem.getSequence(), protein, location[0], location[1]));
+
+            if(particleNames.containsKey(protein)) {
+                String particleName = particleNames.get(protein);
+                final ParticleType particleType = ParticleType.valueOf(particleName);
+                final Gene gene = new Gene(name, elem.getSequence(), particleType, location[0], location[1]);
+                genes.add(gene);
+            } else {
+                System.out.println("No particle name mapping for " + protein);
+            }
+
         }
     }
 
@@ -83,14 +93,4 @@ public class DNA {
     private static final int MIN_GEN_LEN = 60; //from here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC29761/
 
     //endregion
-
-    public static void main(String[] args) throws IOException {
-        File geneFile = new File("data/escherichia_coli/full_genes_info.fasta");
-        DNA dna = new DNA(geneFile);
-        dna.getGenes().forEach(g -> System.out.println(g.getProducts()));
-        System.out.println(dna.genes.size());
-
-    }
-
-
 }

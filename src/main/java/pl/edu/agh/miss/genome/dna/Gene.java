@@ -1,16 +1,18 @@
 package pl.edu.agh.miss.genome.dna;
 
+import pl.edu.agh.miss.ParticleType;
+
 /**
  * Created on 2017-05-06.
  */
 public class Gene {
     private String name;
     private String dnaSequence;
-    private String products;
+    private ParticleType products;
     private int start;
     private int stop;
 
-    public Gene(String name, String dnaSequence, String products, int start, int stop) {
+    public Gene(String name, String dnaSequence, ParticleType products, int start, int stop) {
         this.name = name;
         this.dnaSequence = dnaSequence;
         this.products = products;
@@ -26,11 +28,11 @@ public class Gene {
         this.name = name;
     }
 
-    public String getProducts() {
+    public ParticleType getProducts() {
         return products;
     }
 
-    public void setProducts(String products) {
+    public void setProducts(ParticleType products) {
         this.products = products;
     }
 

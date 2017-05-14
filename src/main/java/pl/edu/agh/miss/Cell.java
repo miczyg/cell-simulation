@@ -35,7 +35,7 @@ public class Cell {
             resourcesPool.remove(substrates);
             resourcesPool.add(products);
 
-            log.info("ResourcesPool: \n{}", resourcesPool);
+            log.debug("ResourcesPool: \n{}", resourcesPool);
         } else {
             log.debug("Not enough resources to make reaction '%s'", reaction.getName());
         }

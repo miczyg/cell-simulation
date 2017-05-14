@@ -10,13 +10,14 @@ import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class App {
     private static final String FILE_FBA = "ncomms12219-s7.xml";
-    private static final String FILE_PARTICLES_NAMES = "mapping.json";
+    private static final String FILE_PARTICLES_NAMES = "particle_names_mapping.json";
+    private static final String FILE_GENES = "data/escherichia_coli/full_genes_info.fasta";
     private static final int STEPS = 20;
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
@@ -32,14 +33,15 @@ public class App {
         List<Reaction> reactions = model.getListOfReactions().stream()
                 .map(r -> loadReaction(model, r)).collect(Collectors.toList());
 
-        HashMap particlesNames = new ObjectMapper().readValue(FILE_PARTICLES_NAMES, HashMap.class);
-        File geneFile = new File("data/escherichia_coli/full_genes_info.fasta");
-        DNA dna = new DNA(geneFile);
-        dna.getGenes().forEach(System.out::println);
+        File fileParticlesNames = new File(getPath(FILE_PARTICLES_NAMES));
+        Map<String, String> particleNames = new ObjectMapper().readValue(fileParticlesNames, Map.class);
+        File geneFile = new File(FILE_GENES);
+        DNA dna = new DNA(geneFile, particleNames);
+        dna.getGenes().forEach(g -> log.info(g.toString()));
 
         log.info("Loaded Reactions: {}", reactions);
         log.info("Loaded Particles: {}", particles);
-        log.info("Loaded Particles names: {}", particlesNames);
+        log.info("Loaded Particles names: {}", particleNames);
 
         ResourcesPool resourcesPool = new ResourcesPool(particles);
         log.info("Loaded Resources Pool: \n{}", resourcesPool);
@@ -53,12 +55,15 @@ public class App {
     }
 
     private static Model loadModel() throws XMLStreamException, IOException {
-        final String sbmlFile = ClassLoader.getSystemResource(FILE_FBA)
-                .getFile().replace("%20", " ");
-
+        final String sbmlFile = getPath(FILE_FBA);
         final SBMLReader reader = new SBMLReader();
         final SBMLDocument document = reader.readSBML(sbmlFile);
         return document.getModel();
+    }
+
+    private static String getPath(String fileName) {
+        return ClassLoader.getSystemResource(fileName)
+                .getFile().replace("%20", " ");
     }
 
     private static Reaction loadReaction(Model model, org.sbml.jsbml.Reaction reaction) {
