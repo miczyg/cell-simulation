@@ -30,12 +30,12 @@ public class Cell {
         List<Particle> products = reaction.getProducts().stream().map(Particle::new).collect(Collectors.toList());
 
         if (resourcesPool.has(substrates)) {
-            log.info("Reaction '{}'", reaction.getName());
+            log.debug("Reaction '{}'", reaction.getName());
 
             resourcesPool.remove(substrates);
             resourcesPool.add(products);
 
-            log.debug("ResourcesPool: \n{}", resourcesPool);
+            log.info("ResourcesPool: \n{}", resourcesPool);
         } else {
             log.debug("Not enough resources to make reaction '%s'", reaction.getName());
         }

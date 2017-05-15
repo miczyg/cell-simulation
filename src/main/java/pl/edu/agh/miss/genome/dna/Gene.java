@@ -8,14 +8,14 @@ import pl.edu.agh.miss.ParticleType;
 public class Gene {
     private String name;
     private String dnaSequence;
-    private ParticleType products;
+    private ParticleType particleType;
     private int start;
     private int stop;
 
     public Gene(String name, String dnaSequence, ParticleType products, int start, int stop) {
         this.name = name;
         this.dnaSequence = dnaSequence;
-        this.products = products;
+        this.particleType = products;
         this.start = start;
         this.stop = stop;
     }
@@ -28,12 +28,12 @@ public class Gene {
         this.name = name;
     }
 
-    public ParticleType getProducts() {
-        return products;
+    public ParticleType getParticleType() {
+        return particleType;
     }
 
-    public void setProducts(ParticleType products) {
-        this.products = products;
+    public void setParticleType(ParticleType particleType) {
+        this.particleType = particleType;
     }
 
     public int getStart() {
@@ -56,7 +56,7 @@ public class Gene {
     public String toString() {
         return "Gene{" +
                 "name='" + name + '\'' +
-                ", products=" + products +
+                ", particleType=" + particleType +
                 ", start=" + start +
                 ", stop=" + stop +
                 '}';

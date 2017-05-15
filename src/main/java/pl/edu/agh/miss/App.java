@@ -5,6 +5,7 @@ import org.sbml.jsbml.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.edu.agh.miss.genome.dna.DNA;
+import pl.edu.agh.miss.genome.dna.Gene;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -12,15 +13,17 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class App {
     private static final String FILE_FBA = "ncomms12219-s7.xml";
     private static final String FILE_PARTICLES_NAMES = "particle_names_mapping.json";
     private static final String FILE_GENES = "data/escherichia_coli/full_genes_info.fasta";
-    private static final int STEPS = 20;
+    private static final int STEPS = 5;
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
+    private static final Random random = new Random(123);
 
     public static void main(String[] args) throws IOException, XMLStreamException, URISyntaxException {
         final Model model = loadModel();
@@ -37,7 +40,9 @@ public class App {
         Map<String, String> particleNames = new ObjectMapper().readValue(fileParticlesNames, Map.class);
         File geneFile = new File(FILE_GENES);
         DNA dna = new DNA(geneFile, particleNames);
-        dna.getGenes().forEach(g -> log.info(g.toString()));
+        List<ParticleType> dnaParticles = dna.getGenes().stream()
+                .map(Gene::getParticleType)
+                .collect(Collectors.toList());
 
         log.info("Loaded Reactions: {}", reactions);
         log.info("Loaded Particles: {}", particles);
@@ -51,6 +56,12 @@ public class App {
         for (int i = 1; i <= STEPS; i++) {
             log.info("Simulation step #{}", i);
             cell.live();
+
+            int particlesToAdd = random.nextInt(dnaParticles.size() / 10);
+            random.ints(particlesToAdd, 0, dnaParticles.size())
+                    .mapToObj(dnaParticles::get)
+                    .map(Particle::new)
+                    .forEach(resourcesPool::add);
         }
     }
 
