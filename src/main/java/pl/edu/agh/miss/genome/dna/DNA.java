@@ -53,20 +53,7 @@ public class DNA {
         }
     }
 
-    /***
-     *
-     * @param dna Unzipped genome sequence
-     * @param target targeting RNA particle
-     */
-    public void transcript(String dna, RNA target) {
-        target.setSequence(
-                Arrays.stream(dna.
-                        split("(?!^)")).
-                        map(dna2mrna::get).
-                        collect(Collectors.joining()
-                        )
-        );
-    }
+
 
     public List<Gene> getGenes() {
         return genes;
@@ -75,15 +62,7 @@ public class DNA {
 
     //region Privates
     private List<Gene> genes;
-    private static final Map<String, String> dna2mrna;
 
-    static {
-        dna2mrna = new HashMap<>();
-        dna2mrna.put("G", "C");
-        dna2mrna.put("C", "G");
-        dna2mrna.put("T", "A");
-        dna2mrna.put("A", "U");
-    }
 
     private static final String GENOME_REGEX = "(ATG.*?(?:TGA|TAA|TAG))";
     /**
