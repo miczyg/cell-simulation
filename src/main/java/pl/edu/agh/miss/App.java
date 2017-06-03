@@ -14,29 +14,38 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class App {
     private static final String FILE_FBA = "ncomms12219-s7.xml";
     private static final String FILE_PARTICLES_NAMES = "particle_names_mapping.json";
     private static final String FILE_GENES = "data/escherichia_coli/full_genes_info.fasta";
-    private static final int SUB_SIMULATIONS_NUMBER = 4;
-    private static final int SUB_SIMULATIONS_STEPS = 5;
-    private static final int SYNCHRONIZATIONS_NUMBER = 10;
+
+    private static final int THREADS_NUMBER = 4;
+    private static final int SUB_SIMULATION_STEPS = 1000;
+    private static final int SUB_SIMULATIONS_NUMBER = 2;
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
     private static final Random random = new Random(123);
 
-    public static void main(String[] args) throws IOException, XMLStreamException, URISyntaxException {
+    public static void main(String[] args) throws IOException, XMLStreamException, URISyntaxException,
+            ExecutionException, InterruptedException {
+
         final Model model = loadModel();
 
         List<Particle> particles = model.getListOfSpecies().stream()
                 .map(Species::getName).map(App::encodeSpeciesName)
                 .map(ParticleType::valueOf).map(Particle::new)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         List<Reaction> reactions = model.getListOfReactions().stream()
-                .map(r -> loadReaction(model, r)).collect(Collectors.toList());
+                .map(r -> loadReaction(model, r)).collect(toList());
 
         File fileParticlesNames = new File(getPath(FILE_PARTICLES_NAMES));
         Map<String, String> particleNames = new ObjectMapper().readValue(fileParticlesNames, Map.class);
@@ -44,7 +53,7 @@ public class App {
         DNA dna = new DNA(geneFile, particleNames);
         List<ParticleType> dnaParticles = dna.getGenes().stream()
                 .map(Gene::getParticleType)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         log.info("Loaded Reactions: {}", reactions);
         log.info("Loaded Particles: {}", particles);
@@ -55,22 +64,27 @@ public class App {
 
         log.info("--- START SIMULATION ---");
         final long startTime = System.currentTimeMillis();
-        for (int i = 0; i < SYNCHRONIZATIONS_NUMBER; i++) {
+        for (int i = 0; i < SUB_SIMULATIONS_NUMBER; i++) {
             log.info("Synchronization #{}", i);
-            List<ResourcesPool> resourcesPools = resourcesPool.split(random, SUB_SIMULATIONS_NUMBER);
-            resourcesPools.stream().parallel().forEach(r -> simulate(r, reactions, dnaParticles));
+            List<ResourcesPool> resourcesPools = resourcesPool.split(random, THREADS_NUMBER);
+            final Stream<ResourcesPool> resourcesPoolsStream =
+                    resourcesPools.parallelStream().map(r -> simulate(r, reactions, dnaParticles));
+            Callable<List<ResourcesPool>> task = () -> resourcesPoolsStream.collect(Collectors.toList());
+            ForkJoinPool forkJoinPool = new ForkJoinPool(THREADS_NUMBER);
+            resourcesPools = forkJoinPool.submit(task).get();
             resourcesPool = ResourcesPool.join(resourcesPools);
         }
         final long endTime = System.currentTimeMillis();
         final long deltaTime = endTime - startTime;
         log.info("Simulation took #{}ms", deltaTime);
+        System.out.println("Simulation took " + deltaTime + "ms");
     }
 
     private static ResourcesPool simulate(ResourcesPool resourcesPool, List<Reaction> reactions,
                                           List<ParticleType> dnaParticles) {
 
         Cell cell = new Cell(resourcesPool, reactions);
-        for (int i = 1; i <= SUB_SIMULATIONS_STEPS; i++) {
+        for (int i = 1; i <= SUB_SIMULATION_STEPS; i++) {
             log.info("Parallel simulation step #{}", i);
             cell.live();
 
@@ -106,7 +120,7 @@ public class App {
                 .map(Species::getName)
                 .map(App::encodeSpeciesName)
                 .map(ParticleType::valueOf)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         final List<ParticleType> substrates = reaction
                 .getListOfReactants().stream()
@@ -115,7 +129,7 @@ public class App {
                 .map(Species::getName)
                 .map(App::encodeSpeciesName)
                 .map(ParticleType::valueOf)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return new Reaction(name, products, substrates);
     }
