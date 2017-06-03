@@ -20,7 +20,9 @@ public class App {
     private static final String FILE_FBA = "ncomms12219-s7.xml";
     private static final String FILE_PARTICLES_NAMES = "particle_names_mapping.json";
     private static final String FILE_GENES = "data/escherichia_coli/full_genes_info.fasta";
-    private static final int STEPS = 5;
+    private static final int SUB_SIMULATIONS_NUMBER = 4;
+    private static final int SUB_SIMULATIONS_STEPS = 5;
+    private static final int SYNCHRONIZATIONS_NUMBER = 10;
 
     private static final Logger log = LoggerFactory.getLogger(App.class);
     private static final Random random = new Random(123);
@@ -52,9 +54,24 @@ public class App {
         log.info("Loaded Resources Pool: \n{}", resourcesPool);
 
         log.info("--- START SIMULATION ---");
+        final long startTime = System.currentTimeMillis();
+        for (int i = 0; i < SYNCHRONIZATIONS_NUMBER; i++) {
+            log.info("Synchronization #{}", i);
+            List<ResourcesPool> resourcesPools = resourcesPool.split(random, SUB_SIMULATIONS_NUMBER);
+            resourcesPools.stream().parallel().forEach(r -> simulate(r, reactions, dnaParticles));
+            resourcesPool = ResourcesPool.join(resourcesPools);
+        }
+        final long endTime = System.currentTimeMillis();
+        final long deltaTime = endTime - startTime;
+        log.info("Simulation took #{}ms", deltaTime);
+    }
+
+    private static ResourcesPool simulate(ResourcesPool resourcesPool, List<Reaction> reactions,
+                                          List<ParticleType> dnaParticles) {
+
         Cell cell = new Cell(resourcesPool, reactions);
-        for (int i = 1; i <= STEPS; i++) {
-            log.info("Simulation step #{}", i);
+        for (int i = 1; i <= SUB_SIMULATIONS_STEPS; i++) {
+            log.info("Parallel simulation step #{}", i);
             cell.live();
 
             int particlesToAdd = random.nextInt(dnaParticles.size() / 10);
@@ -63,6 +80,8 @@ public class App {
                     .map(Particle::new)
                     .forEach(resourcesPool::add);
         }
+
+        return resourcesPool;
     }
 
     private static Model loadModel() throws XMLStreamException, IOException {
