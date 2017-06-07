@@ -1,8 +1,6 @@
 package pl.edu.agh.miss;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResourcesPool {
@@ -11,6 +9,13 @@ public class ResourcesPool {
 
     public ResourcesPool(List<Particle> particles) {
         this.resources = particles.stream().collect(Collectors.groupingBy(Particle::getParticleType));
+    }
+
+    public static ResourcesPool join(Collection<ResourcesPool> resourcesPools) {
+        final List<Particle> resourcesList = resourcesPools.stream().map(r -> r.resources.values())
+                .flatMap(Collection::stream).flatMap(Collection::stream).collect(Collectors.toList());
+
+        return new ResourcesPool(resourcesList);
     }
 
     public void add(List<Particle> particles) {
@@ -37,6 +42,13 @@ public class ResourcesPool {
                 .stream()
                 .allMatch(entry -> resources.containsKey(entry.getKey()) &&
                         resources.get(entry.getKey()).size() >= entry.getValue());
+    }
+
+    public List<ResourcesPool> split(Random random, int resourcesPoolsNumber) {
+        return this.resources
+                .values().stream().flatMap(List::stream)
+                .collect(Collectors.groupingBy(x -> random.nextInt(resourcesPoolsNumber)))
+                .values().stream().map(ResourcesPool::new).collect(Collectors.toList());
     }
 
     @Override
