@@ -38,6 +38,7 @@ public class App {
 
         File fileParticlesNames = new File(getPath(FILE_PARTICLES_NAMES));
         Map<String, String> particleNames = new ObjectMapper().readValue(fileParticlesNames, Map.class);
+
         File geneFile = new File(FILE_GENES);
         DNA dna = new DNA(geneFile, particleNames);
         List<ParticleType> dnaParticles = dna.getGenes().stream()
