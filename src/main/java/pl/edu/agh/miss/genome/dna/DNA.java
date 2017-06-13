@@ -6,16 +6,21 @@ import net.sf.jfasta.impl.FASTAElementIterator;
 import net.sf.jfasta.impl.FASTAFileReaderImpl;
 import org.apache.commons.lang3.StringUtils;
 import pl.edu.agh.miss.ParticleType;
-import pl.edu.agh.miss.genome.rna.RNA;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DNA {
 
+    //region Privates
+    private List<Gene> genes;
+    //endregion
+
     //region Public methods
+    public List<Gene> getGenes() {
+        return genes;
+    }
 
     public DNA(File fastaFile, Map<String, String> particleNames) throws IOException {
         final FASTAFileReader reader = new FASTAFileReaderImpl(fastaFile);
@@ -52,24 +57,5 @@ public class DNA {
 
         }
     }
-
-
-
-    public List<Gene> getGenes() {
-        return genes;
-    }
-    //endregion
-
-    //region Privates
-    private List<Gene> genes;
-
-
-    private static final String GENOME_REGEX = "(ATG.*?(?:TGA|TAA|TAG))";
-    /**
-     * from here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC29761/
-     * meets num of genes here: http://book.bionumbers.org/how-many-genes-are-in-a-genome/
-     */
-    private static final int MIN_GEN_LEN = 60; //from here: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC29761/
-
     //endregion
 }
